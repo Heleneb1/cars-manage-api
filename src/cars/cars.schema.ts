@@ -1,12 +1,16 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Brand } from 'src/brands/brands.schema';
+import { v4 as uuidv4 } from 'uuid';
 
+export type CarDocument = Car & Document;
 @Schema()
 
-export class Car extends Document {
+export class Car {
+    @Prop({ type: String, default: () => uuidv4() })
+    _id: string;
     @Prop({ required: true })
-    name: string;
+    model: string;
 
     @Prop({ required: true })
     year: number;
@@ -17,7 +21,7 @@ export class Car extends Document {
     //une voiture appartient à une marque
 
     @Prop({ type: Types.ObjectId, ref: 'Brand', required: true })
-    brand: Brand;
+    brandId: Types.ObjectId;
 }
 
 export const CarSchema = SchemaFactory.createForClass(Car);

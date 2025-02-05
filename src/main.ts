@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  //TODO rappeler le port de l'application
+  //TODO swagger
   await app.listen(process.env.PORT ?? 3001);
 }
 bootstrap();
