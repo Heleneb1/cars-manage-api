@@ -15,13 +15,15 @@ export class Car {
     @Prop({ required: true })
     year: number;
 
-    @Prop({ required: true })
-    price: number;
+    ;
+
+    @Prop({ type: Types.Decimal128, required: true })
+    price: Types.Decimal128
 
     //une voiture appartient à une marque
 
-    @Prop({ type: Types.ObjectId, ref: 'Brand', required: true })
-    brandId: Types.ObjectId;
+    @Prop({ type: Types.UUID, ref: 'Brand', required: true })
+    brandId: Types.UUID;
 }
 
 export const CarSchema = SchemaFactory.createForClass(Car);

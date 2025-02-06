@@ -21,7 +21,7 @@ export class Brand extends Document {
 
 export const BrandSchema = SchemaFactory.createForClass(Brand);
 
-// Utilisation du middleware de mongoose pour un delete en cascade
+// Utilisation du middleware pre de mongoose pour un delete en cascade
 
 const carModel = model('Car', CarSchema)
 

@@ -1,5 +1,5 @@
 import { BrandsService } from './brands.service';
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { CreateCarDto } from 'src/cars/dto/create-car.dto';
 
@@ -25,7 +25,10 @@ export class BrandsController {
     async addCarToBrand(
         @Param('brandId') brandId: string,
         @Body() createCarDto: CreateCarDto,
+
     ) {
+        console.log('brandId', brandId);
+        console.log(typeof brandId);
         return this.brandsService.addCarToBrand(brandId, createCarDto);
     }
 
