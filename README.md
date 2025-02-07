@@ -56,7 +56,8 @@ L'API sera accessible sur http://localhost:3001.
 docker-compose up -d
 ```
 
-les Endpoints disponible l'API est documenté en partie avec Swagger
+### les Endpoints disponible 
+l'API est documenté en partie avec Swagger
 
 🔹 Accéder à Swagger
 
