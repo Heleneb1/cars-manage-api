@@ -25,11 +25,10 @@ export class AuthController {
         const newUserDto: CreateUserDto = {
             email: body.email,
             password: hashedPassword,
-            firstName: body.firstName, // Add appropriate value
-            lastName: body.lastName // Add appropriate value
+            firstName: body.firstName,
+            lastName: body.lastName
         };
-        console.log(newUserDto);
-        console.log(body)
+
         const newUser = await this.usersService.create(newUserDto);
         return newUser;
     }

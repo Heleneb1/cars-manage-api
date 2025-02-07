@@ -19,7 +19,7 @@ export class AuthService {
         return this.jwtService.sign({ sub: userId, role: role });
     }
     async verifyToken(token: string): Promise<any> {
-        console.log('Token de authService', token)
+
         return this.jwtService.verify(token);
     }
 

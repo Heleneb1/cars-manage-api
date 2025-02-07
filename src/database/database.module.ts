@@ -19,9 +19,9 @@ const client = new MongoClient(uri);
 export class DatabaseModule {
     constructor() {
         client.connect().then(() => {
-            console.log('Connected to MongoDB 😉');
+            console.info('Connected to MongoDB 😉');
         }).catch((err) => {
-            console.log(err);
+            console.error(err);
         });
     }
 }

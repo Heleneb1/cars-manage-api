@@ -14,14 +14,12 @@ export class Brand extends Document {
     @Prop({ required: true })
     country: string;
 
-    // une marque possède plusieurs voitures
     @Prop({ type: [{ type: Types.ObjectId, ref: 'Car' }] })
     cars: Types.ObjectId[];
 }
 
 export const BrandSchema = SchemaFactory.createForClass(Brand);
 
-// Utilisation du middleware pre de mongoose pour un delete en cascade
 
 const carModel = model('Car', CarSchema)
 

@@ -43,7 +43,7 @@ export class UsersController {
         updateUserDto._id = id;
         return this.usersService.update(updateUserDto)
     }
-    //TODO revoir
+
     @Patch(':id/role')
     @UseGuards(RolesGuard)
     @Roles(Role.Admin)

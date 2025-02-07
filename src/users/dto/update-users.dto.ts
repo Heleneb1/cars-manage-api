@@ -5,7 +5,7 @@ export class UpdateUserDto {
 
     _id: string;
 
-    @IsNotEmpty()// ne peut pas être vide
+    @IsNotEmpty()
     firstName: string;
 
     @IsNotEmpty()

@@ -40,8 +40,6 @@ export class BrandsController {
         @Body() createCarDto: CreateCarDto,
 
     ) {
-        console.log('brandId', brandId);
-        console.log(typeof brandId);
         return this.brandsService.addCarToBrand(brandId, createCarDto);
     }
 

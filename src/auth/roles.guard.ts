@@ -29,19 +29,17 @@ export class RolesGuard implements CanActivate {
         }
 
         try {
-            console.log('Token reçu:', token);
+
             const user = await this.authService.verifyToken(token);
-            console.log('Utilisateur décodé:', user);
+
             request.user = user;
 
             if (!user || !requiredRoles.includes(user.role)) {
-                console.log('Accès refusé. Rôle requis:', requiredRoles, 'Rôle de l\'utilisateur:', user.role);
                 throw new ForbiddenException('Access denied');
             }
 
             return true;
         } catch (err) {
-            console.log('Erreur de vérification du token:', err);
             throw new UnauthorizedException('Invalid token');
         }
     }
