@@ -1,33 +1,62 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { User, UserDocument } from "./users.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { CreateUserDto } from "./dto/create-user.dto";
-
+import { Role } from "./role.enum";
+import { UpdateUserDto } from "./dto/update-users.dto";
+import { UpdateCarDto } from "src/cars/dto/update-car.dto";
 
 @Injectable()
 export class UsersService {
-    findOne(id: string): User | PromiseLike<User | null> | null {
-        return this.userModel.findById(id);
+    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
+
+    async findOne(id: string): Promise<UserDocument | null> {
+        return this.userModel.findById(id).exec();
     }
-    delete(id: string): User | PromiseLike<User | null> | null {
-        return this.userModel.findByIdAndDelete(id);
+
+    async delete(id: string): Promise<UserDocument | null> {
+        return this.userModel.findByIdAndDelete(id).exec();
     }
-    findAll(): User[] | PromiseLike<User[]> {
-        return this.userModel.find();
+
+    async findAll(): Promise<UserDocument[]> {
+        return this.userModel.find().exec();
     }
-    constructor(
-        @InjectModel(User.name) private userModel: Model<UserDocument>
-    ) { }
 
     async findByEmail(email: string): Promise<UserDocument | null> {
-        return this.userModel.findOne({ email });
+        return this.userModel.findOne({ email }).exec();
+    }
+
+
+    async create(createUserDto: CreateUserDto): Promise<User> {
+        const createdUser = new this.userModel({
+            ...createUserDto,
+            role: Role.User
+        });
+
+        return createdUser.save();
+    }
+
+    async update(updateUserDto: UpdateUserDto) {
+        const userToUpdate = await this.userModel.findById(updateUserDto._id).exec()
+        if (!userToUpdate) {
+            throw new NotFoundException(`User with id: ${updateUserDto._id} not found`)
+        }
+        return this.userModel
+            .findByIdAndUpdate(updateUserDto._id, updateUserDto, { new: true })
+            .exec();
 
     }
-    async create(createUserDto: CreateUserDto): Promise<User> {
-        const createdUser = new this.userModel(createUserDto);
-        console.log(createdUser);
-        return createdUser.save();
+
+    async updateRole(id: string, role: Role) {
+        const userToUpdate = await this.userModel.findById(id).exec()
+        if (!userToUpdate) {
+            throw new NotFoundException(`User with id: ${id} not found`)
+        }
+        return this.userModel
+            .findByIdAndUpdate(id, { role: role }, { new: true })
+            .exec();
+
     }
 
 }

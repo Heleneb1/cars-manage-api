@@ -1,7 +1,10 @@
 import { IsEmail, IsNotEmpty } from "class-validator";
 import { Role } from "../role.enum";
 
-export class CreateUserDto {
+export class UpdateUserDto {
+
+    _id: string;
+
     @IsNotEmpty()// ne peut pas être vide
     firstName: string;
 
@@ -14,6 +17,7 @@ export class CreateUserDto {
 
     @IsNotEmpty()
     password: string;
-
+    @IsNotEmpty()
+    role: Role
 
 }

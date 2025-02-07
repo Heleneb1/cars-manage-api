@@ -1,20 +1,26 @@
 import {
     BadRequestException,
-
+    Body,
     Controller,
     Delete,
     Get,
     Param,
+    Patch,
+    Put,
+    UseGuards
 
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './users.schema';
-import { CreateUserDto } from './dto/create-user.dto';
+
+import { UpdateUserDto } from './dto/update-users.dto';
+import { Role } from './role.enum';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorater';
 
 @Controller('users')
 export class UsersController {
     constructor(private readonly usersService: UsersService) { }
-
 
     @Get()
     async findAll(): Promise<User[]> {
@@ -31,5 +37,18 @@ export class UsersController {
     @Delete(':id')
     async delete(@Param('id') id: string): Promise<User | null> {
         return this.usersService.delete(id);
+    }
+    @Put(':id')
+    async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User | null> {
+        updateUserDto._id = id;
+        return this.usersService.update(updateUserDto)
+    }
+    //TODO revoir
+    @Patch(':id/role')
+    @UseGuards(RolesGuard)
+    @Roles(Role.Admin)
+    async assignRole(@Param('id') id: string, @Body('role') role: Role): Promise<User | null> {
+
+        return this.usersService.updateRole(id, role)
     }
 }

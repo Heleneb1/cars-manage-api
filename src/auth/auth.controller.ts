@@ -44,8 +44,9 @@ export class AuthController {
         if (!isPasswordValid) {
             return { message: 'Invalid password' };
         }
-        const token = await this.authService.generateToken(user.id);
+        const token = await this.authService.generateToken(user.id, user.role);
         return { token };
+
     }
     @Post('logout')
     async logout() {
