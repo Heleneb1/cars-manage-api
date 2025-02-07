@@ -33,20 +33,26 @@ export class BrandsService {
         }
     }
 
-    async findAll(): Promise<Brand[]> {
-        try {
-            return this.brandModel.find()
+    async findAll(page: number = 1, limit: number = 10): Promise<any> {
+        const skip = (page - 1) * limit;
+        const [data, total] = await Promise.all([
+            this.brandModel.find()
                 .populate({
                     path: 'cars',
                     select: 'model'
 
-                })
-                .exec();
-        } catch (error) {
-            {
-                throw new Error('Erreur lors de la récipération des marques: ' + error.message);
-            };
+                }).skip(skip).limit(limit)
+                .exec(),
+            this.brandModel.countDocuments().exec(),
+
+        ]);
+        return {
+            data,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit),
         }
+
     }
     async findOne(id: string): Promise<Brand | null> {
         return this.brandModel.findById(id).exec();

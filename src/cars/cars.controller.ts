@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
 import { CarsService } from "./cars.service";
 import { UpdateCarDto } from "./dto/update-car.dto";
 
@@ -7,8 +7,12 @@ export class CarsController {
     constructor(private readonly carsService: CarsService) { }
 
     @Get()
-    async findAll() {
-        return this.carsService.findAll();
+    async findAll(
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 10,
+    ) {
+
+        return this.carsService.findAll(page, limit);
     }
 
     @Get(':id')

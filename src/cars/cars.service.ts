@@ -27,9 +27,19 @@ export class CarsService {
                 throw new Error(error);
             });
     }
-    async findAll(): Promise<Car[]> {
-        return this.carModel.find()
-            .exec();
+    async findAll(page: number = 1, limit: number = 10): Promise<any> {
+        const skip = (page - 1) * limit;
+
+        const [data, total] = await Promise.all([
+            this.carModel.find().skip(skip).limit(limit).exec(),
+            this.carModel.countDocuments().exec(),
+        ]);
+        return {
+            data,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit),
+        };
     }
     async findOne(id: string): Promise<Car | null> {
         return this.carModel.findById(id).exec();
