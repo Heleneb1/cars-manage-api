@@ -6,6 +6,7 @@ import { BrandsService } from "./brands.service";
 import { CarSchema } from "src/cars/cars.schema";
 import { CarsModule } from "src/cars/cars.module";
 import { SearchService } from "src/services/search.service";
+import { BrandRepository } from "./brands.repository";
 
 
 
@@ -25,6 +26,6 @@ import { SearchService } from "src/services/search.service";
 
     ],
     controllers: [BrandsController],
-    providers: [BrandsService, SearchService],
+    providers: [BrandsService, SearchService, BrandRepository],
 })
 export class BrandsModule { }

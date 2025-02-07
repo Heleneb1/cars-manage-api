@@ -1,94 +1,71 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Brand, BrandDocument } from './brands.schema';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { CreateCarDto } from 'src/cars/dto/create-car.dto';
-import { Car, CarDocument } from 'src/cars/cars.schema';
 
+import { Brand } from './brands.schema';
+import { BrandRepository } from './brands.repository';
+import { CarRepository } from 'src/cars/cars.repository';
 
 @Injectable()
 export class BrandsService {
     constructor(
-
-        @InjectModel(Brand.name) private brandModel: Model<BrandDocument>,
-        @InjectModel(Car.name) private carModel: Model<CarDocument>,
-
+        private readonly brandRepository: BrandRepository,
+        private readonly carRepository: CarRepository,
     ) { }
 
     async create(createBrandDto: CreateBrandDto): Promise<Brand> {
         try {
-            const createdBrand = await this.brandModel.create({
-                _id: uuidv4(),
-                name: createBrandDto.name,
-                country: createBrandDto.country,
-            });
-            return await createdBrand.save()
+            return this.brandRepository.create(createBrandDto);
         } catch (error) {
-            {
-                throw new Error('Erreur lors de la création de la marque: ' + error.message);
-            };
+            throw new Error('Erreur lors de la création de la marque: ' + error.message);
         }
     }
 
     async findAll(page: number = 1, limit: number = 10): Promise<any> {
         const skip = (page - 1) * limit;
-        const [data, total] = await Promise.all([
-            this.brandModel.find()
-                .populate({
-                    path: 'cars',
-                    select: 'model'
-
-                }).skip(skip).limit(limit)
-                .exec(),
-            this.brandModel.countDocuments().exec(),
-
-        ]);
+        const { data, total } = await this.brandRepository.findAll(skip, limit);
         return {
             data,
             total,
             page,
             totalPages: Math.ceil(total / limit),
-        }
+        };
+    }
 
-    }
     async findOne(id: string): Promise<Brand | null> {
-        return this.brandModel.findById(id).exec();
+        const brand = await this.brandRepository.findById(id);
+        if (!brand) {
+            throw new NotFoundException(`Brand ${id} not found`);
+        }
+        return brand;
     }
-    async update(updateBrandDto: UpdateBrandDto) {
-        const brand = await this.brandModel.findById(updateBrandDto.id).exec();
+
+    async update(updateBrandDto: UpdateBrandDto): Promise<Brand | null> {
+        const brand = await this.brandRepository.findById(updateBrandDto.id);
         if (!brand) {
             throw new NotFoundException(`Brand ${updateBrandDto.id} not found`);
         }
-        return this.brandModel
-            .findByIdAndUpdate(updateBrandDto.id, updateBrandDto, { new: true })
-            .exec();
-    }
-    async delete(id: string) {
-        const brandToDelete = this.brandModel.deleteOne({ _id: id }).exec();
-        if ((await brandToDelete).deletedCount === 0) {
-            throw new NotFoundException(`Brand ${id} not found`);
-        }
-        return { message: ` Brand ${id} deleted ` };
+        return this.brandRepository.update(updateBrandDto.id, updateBrandDto);
     }
 
-    async addCarToBrand(brandId: string, createCarDto: CreateCarDto) {
-        const brand = await this.brandModel.findById(brandId).exec();
+    async delete(id: string): Promise<any> {
+        const result = await this.brandRepository.delete(id);
+        if (result.deletedCount === 0) {
+            throw new NotFoundException(`Brand ${id} not found`);
+        }
+        return { message: `Brand ${id} deleted` };
+    }
+
+    async addCarToBrand(brandId: string, createCarDto: CreateCarDto): Promise<any> {
+        const brand = await this.brandRepository.findById(brandId);
         if (!brand) {
             throw new NotFoundException(`Brand ${brandId} not found`);
         }
-        const newCar = {
+        const newCar = await this.carRepository.create({
             ...createCarDto,
-            _id: uuidv4(),
             brandId: brand._id,
-        };
-        brand.cars.push(newCar as any);
-        await brand.save();
-        return { message: 'voiture ajoutée à la marque', car: newCar };
+        });
+        return { message: 'Voiture ajoutée à la marque', car: newCar };
     }
-
-
-
 }
